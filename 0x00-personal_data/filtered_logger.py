@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+"""personal data module"""
 import re
 import logging
 
-def filter_datum(fields, redaction, message, separator):
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
     """Returns log message obfuscated"""
     pattern = '|'.join(f'{field}=[^{separator}]*' for field in fields)
     return re.sub(pattern, lambda m: f"{m.group().split('=')[0]}={redaction}",
@@ -25,4 +27,10 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Filters values in in incoming log records"""
-        NotImplementedError
+        record.msg = filter_datum(self.fields, self.REDACTION,
+                                  record.getMessage(), self.SEPARATOR)
+        return super(RedactingFormatter, self).format(record)
+
+
+if __name__ == '__main__':
+    main()
