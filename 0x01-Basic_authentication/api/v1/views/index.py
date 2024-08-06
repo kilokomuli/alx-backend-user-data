@@ -33,3 +33,12 @@ def unauthorized() -> None:
        - 401 error by using abort - Custom Error Pages
     """
     abort(401)
+
+
+@app_views.route('/forbidden', strict_slashes=False)
+def forbidden() -> None:
+    """GET /api/v1/forbidden
+    Return:
+       403
+    """
+    abort(403)
