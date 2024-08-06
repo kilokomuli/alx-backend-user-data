@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Auth module"""
+from fnmatch import fnmatch
 from flask import request
 from typing import List, TypeVar
 
@@ -15,7 +16,11 @@ class Auth:
         if not path.endswith('/'):
             path += '/'
         for excluded_path in excluded_paths:
-            if excluded_path.endswith('/') and path == excluded_path:
+            if excluded_path.endswith('*'):
+                pattern = excluded_path.rstrip('*') + '*'
+                if fnmatch(path, pattern):
+                    return False
+            elif excluded_path.endswith('/') and path == excluded_path:
                 return False
         return True
 
