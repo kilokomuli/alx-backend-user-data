@@ -1,4 +1,4 @@
-#1/usr/bin/env python3
+#!/usr/bin/env python3
 """Logout"""
 from api.v1.app import auth
 from api.v1.views import app_views
