@@ -52,27 +52,26 @@ def forbidden(error) -> str:
 def before_request():
     """Authenticates a user before processing a request.
     """
-    if auth:
-        excluded_paths = [
+    if auth is None:
+        return
+    excluded_paths = [
             '/api/v1/status/',
             '/api/v1/unauthorized/',
             '/api/v1/forbidden/',
             '/api/v1/auth_session/login/',
         ]
-        if auth.require_auth(request.path, excluded_paths):
-            return
-        auth_header = auth.authorization_header(request)
-        session_cookie = auth.session_cookie(request)
+    if not auth.require_auth(request.path, excluded_paths):
+        return
+    auth_header = auth.authorization_header(request)
+    session_cookie = auth.session_cookie(request)
 
-        if auth_header is None and session_cookie is None:
-            abort(401)
+    if auth_header is None and session_cookie is None:
+        abort(401)
+    user = auth.current_user(request)
 
-        user = auth.current_user(request)
-        
-        if user is None:
-            abort(403)
-        
-        request.current_user = user
+    if user is None:
+        abort(403)
+    request.current_user = user
 
 
 if __name__ == "__main__":
