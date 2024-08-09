@@ -11,7 +11,7 @@ class SessionDBAuth(SessionExpAuth):
         """creates and stores new instance of UserSession"""
         session_id = super().create_session(user_id)
         if session_id is None:
-            return Non
+            return None
         kwargs = {'user_id': user_id, 'session_id': session_id}
         user_session = UserSession(**kwargs)
         user_session.save()
