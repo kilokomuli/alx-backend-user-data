@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """DB module
 """
+from typing import Dict
 from sqlalchemy import create_engine
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 
 from user import Base, User
@@ -41,3 +44,14 @@ class DB:
             self._session.rollback()
             raise
         return new_user
+
+    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+        """returns the first row foundin the users"""
+        session = self._session
+        try:
+            user = session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
+            raise NoResultFound()
+        except InvalidRequestError:
+            raise InvalidRequestError()
+        return user
