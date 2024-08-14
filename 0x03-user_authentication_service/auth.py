@@ -12,6 +12,7 @@ class Auth:
     def __init__(self):
         self._db = DB()
 
+
 def _hash_password(password: str) -> bytes:
     """Returns bytes as a salted hash of the input
     password"""
