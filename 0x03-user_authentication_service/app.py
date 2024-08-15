@@ -3,7 +3,6 @@
 from flask import Flask, jsonify
 
 
-
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
