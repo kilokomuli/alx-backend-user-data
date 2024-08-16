@@ -39,13 +39,6 @@ class DB:
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """Adds a new user to the db with the given email and hashed password.
-
-        Args:
-            email (str): The email address of the new user.
-            hashed_password (str): The hashed password of the new user.
-
-        Returns:
-            User: A User object representing the new user.
         """
         # Create new user
         new_user = User(email=email, hashed_password=hashed_password)
@@ -58,40 +51,26 @@ class DB:
             raise
         return new_user
 
-    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Find a user by specified attributes.
-
-        Raises:
-            error: NoResultFound: When no results are found.
-            error: InvalidRequestError: When invalid query arguments are passed
-
-        Returns:
-            User: First row found in the `users` table.
         """
+        attrs, vals = [], []
+        for attr, val in kwargs.items():
+            if not hasattr(User, attr):
+                raise InvalidRequestError()
+            attrs.append(getattr(User, attr))
+            vals.append(val)
+
         session = self._session
-        try:
-            user = session.query(User).filter_by(**kwargs).one()
-        except NoResultFound:
+        query = session.query(User)
+        user = query.filter(tuple_(*attrs).in_([tuple(vals)])).first()
+        if not user:
             raise NoResultFound()
-        except InvalidRequestError:
-            raise InvalidRequestError()
-        # print("Type of user: {}".format(type(user)))
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Updates a user's attributes by user ID and arbitrary keyword
         arguments.
-
-        Args:
-            user_id (int): The ID of the user to update.
-            **kwargs: Keyword arguments representing the user's attributes to
-            update.
-
-        Raises:
-            ValueError: If an invalid attribute is passed in kwargs.
-
-        Returns:
-            None
         """
         try:
             # Find the user with the given user ID
