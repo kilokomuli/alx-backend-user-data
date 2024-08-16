@@ -60,6 +60,17 @@ class Auth:
         """Updtaes the correspomding users sesdsion ID to None"""
         self._db.update_user(user_id, session_id=None)
 
+    def get_reset_password_token(self, email: str) -> str:
+        """resets password token"""
+        db = self._db
+        try:
+            user = db.find_user_by(email=email)
+        except NoResultFound:
+            raise ValueError
+        reset_token = _generate_uuid()
+        db.update_user(user.id, reset_token=reset_token)
+        return reset_token
+
 
 def _hash_password(password: str) -> bytes:
     """Returns bytes as a salted hash of the input
